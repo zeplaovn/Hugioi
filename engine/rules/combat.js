@@ -216,7 +216,7 @@
         s.mp -= cost;
         s.cooldowns[index] = now + Math.max(cd[index], this.attackInterval()) * 1000;
         if (index === 2) s.hp = Math.min(this.stats().HP, s.hp + this.stats().HP * .26 * (1 + this.rootEffects().heal));
-        else this._strike([2, 1.5, 1, 3.6][index] * (1 + .02 * (s.tech[index] - 1)), now, true);
+        else this._strike([2, 1.5, 1, 3.6][index], now, true);
       },
       activateArtifact(payload, now) {
         now = at(this, now);

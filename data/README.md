@@ -14,7 +14,7 @@ Dữ liệu thiết kế và mô hình cân bằng. Thuần dữ liệu và hàm
 | `character.js` | Chủng tộc, thiên phú, thiên mệnh, thành tựu, tạo tên. |
 | `meridians.js` | 12 chính kinh, 8 kỳ kinh, hệ ngũ hành và tạp chất (hiện chỉ xem trước; luật trong engine chưa triển khai). |
 | `social.js` | Tri kỷ, đạo hữu, đối thủ, giao du. |
-| `adventures.js` | Bí cảnh, kỳ ngộ, tông môn, nhiệm vụ tông môn, tôi luyện linh căn. |
+| `adventures.js` | Bí cảnh, kỳ ngộ, tông môn, nhiệm vụ tông môn, thế mạnh ngũ hành. |
 | `story.js` | Thiên Thư, 14 chương và hội thoại NPC; dữ liệu không tự cấp thưởng. |
 
 Quy ước: file này không `require` bất cứ thứ gì ngoài `data/`.

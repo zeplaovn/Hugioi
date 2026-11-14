@@ -3,10 +3,8 @@
   'use strict';
   const ELEMENT_NAMES = ['Kim', 'Mộc', 'Thủy', 'Hỏa', 'Thổ'];
   const BEATS = [1, 4, 3, 0, 2];
-  const TEMPER_EFFECTS = [
-    { attack: .012, crit: .002 }, { hp: .015, regen: .0002 },
-    { rate: .01, dodge: .002 }, { attack: .008, crit: .004 }, { guard: .015, hp: .008 }
-  ];
+  /* Thế mạnh nền của từng hệ ngũ hành (cộng vào rootEffects); thứ tự theo ELEMENT_NAMES. */
+  const ELEMENT_BASE = [{ attack: .05, crit: .02 }, { hp: .08, heal: .15 }, { mp: .08, dodge: .02, mpRegen: .10 }, { attack: .08, critDmg: .05 }, { guard: .08, hp: .05, reduction: .05 }];
   const DUNGEONS = [
     ['moc', 'Thanh Mộc Lâm', 1, 0, 5, 60, 'Cổ Mộc Yêu Vương', 'Rừng cổ linh khí dày đặc, yêu thú ẩn sau tán lá.'],
     ['thuy', 'Huyền Thủy Đàm', 2, 0, 5, 60, 'Huyền Thủy Giao', 'Thủy tộc canh giữ linh tuyền dưới đáy đầm.'],
@@ -37,16 +35,16 @@
     ['ditich', 'Di Tích Tu Sĩ Cổ', 1, 'exp', 'Đạo niệm lưu trong di tích soi sáng đường tu.'],
     ['mach', 'Mạch Linh Thạch Nhỏ', 1, 'stone', 'Dưới lớp đá cũ là một mạch linh thạch.'],
     ['dong', 'Động Thiên Phúc Địa', 1, 'pill', 'Linh đan còn nguyên trong động phủ bỏ hoang.'],
-    ['caonhan', 'Cao Nhân Điểm Hóa', 1, 'essence', 'Cao nhân giúp ngưng tụ tinh hoa linh căn.'],
+    ['caonhan', 'Cao Nhân Điểm Hóa', 1, 'exp', 'Cao nhân chỉ điểm, đạo niệm thêm thông suốt.'],
     ['tuyen', 'Linh Tuyền Tẩy Thể', 1, 'heal', 'Linh tuyền gột sạch mỏi mệt thân thể.'],
-    ['conghuong', 'Nguyên Tố Cộng Hưởng', 1, 'essence', 'Linh căn cộng hưởng với thiên địa.'],
+    ['conghuong', 'Nguyên Tố Cộng Hưởng', 1, 'exp', 'Linh căn cộng hưởng với thiên địa, tu vi tăng tiến.'],
     ['thuongnhan', 'Thương Nhân Bí Ẩn', 1, 'material', 'Khách qua đường để lại linh tài quý.'],
     ['thienthu', 'Thiên Thư Truyền Thừa', 2, 'manual', 'Thiên thư cổ chứa một phần đạo pháp.'],
     ['tho', 'Trường Thọ Quả Chín Muồi', 2, 'life', 'Trái chín chứa sinh cơ thuần khiết.'],
     ['phacanh', 'Linh Đan Trên Vách Đá', 2, 'break', 'Linh đan hỗ trợ phá cảnh nằm trong khe đá.'],
     ['trieu', 'Linh Khí Triều Tịch', 2, 'exp', 'Linh khí dâng lên như thủy triều.'],
-    ['tinhhoa', 'Tinh Hoa Đất Trời', 2, 'allEssence', 'Ngũ hành kết tinh giữa trời đất.'],
-    ['tayan', 'Thiên Địa Linh Dịch', 3, 'allEssence', 'Linh dịch ngưng tụ tinh hoa để tôi luyện đạo căn.'],
+    ['tinhhoa', 'Tinh Hoa Đất Trời', 2, 'exp', 'Ngũ hành kết tinh giữa trời đất, nuôi dưỡng đạo thể.'],
+    ['tayan', 'Thiên Địa Linh Dịch', 3, 'exp', 'Linh dịch ngưng tụ, thấm vào kinh mạch.'],
     ['tiennhan', 'Tiên Nhân Quán Đỉnh', 3, 'insight', 'Hư ảnh tiên nhân truyền đạo, bồi dưỡng sinh cơ.']
   ].map(([id, name, rarity, effect, desc]) => ({ id, name, rarity, effect, desc }));
   const SECTS = [
@@ -102,7 +100,6 @@
     { id: 'ore', name: 'Linh tài', kind: 'MAT', count: 4, cost: 140, rank: 0 },
     { id: 'seed', name: 'Hạt linh thảo', kind: 'SEED', count: 2, cost: 130, rank: 1 },
     { id: 'break', name: 'Đan đột phá', kind: 'PILL', effect: 'DOT_PHA', count: 1, cost: 250, rank: 0 },
-    { id: 'essence', name: 'Tinh hoa linh căn', count: 3, cost: 180, rank: 2 },
     { id: 'life', name: 'Đan thọ nguyên', kind: 'PILL', effect: 'THO_NGUYEN', count: 1, cost: 400, rank: 3 },
     { id: 'ward', name: 'Phù hộ kiếp', kind: 'TAL', effect: 'KIEP', count: 1, cost: 180, rank: 1, sect: 'thanhvan' },
     { id: 'power', name: 'Đan chiến đấu', kind: 'PILL', effect: 'CHIEN_DAU', count: 1, cost: 180, rank: 1, sect: 'huyetsat' },
@@ -135,7 +132,7 @@
       { id: 'bargain', label: 'Thương lượng', desc: 'Dùng lời lẽ khiến yêu thú nhường đường. Thành thì nhận một phần linh thạch, bại thì hao tổn sinh lực. Tâm ma cao khiến khó thành hơn.' }
     ]
   };
-  const data = { ELEMENT_NAMES, BEATS, TEMPER_EFFECTS, TEMPER_MAX: 10, DUNGEONS, ENCOUNTER_RARITIES, ENCOUNTERS, ENCOUNTER_INTERVAL: 180, EXPLORE_WEIGHTS, EXPLORE_CHOICES, EXPLORE_POINTS, TAM_MA_MAX, TAM_MA_BREAK_PENALTY, TAM_MA_CLEANSE, SECTS, SECT_RANKS, SECT_DISCIPLES, sectDiscipleForRoot, SECT_MISSIONS, SECT_SHOP, SECT_BOOKS };
+  const data = { ELEMENT_NAMES, BEATS, ELEMENT_BASE, DUNGEONS, ENCOUNTER_RARITIES, ENCOUNTERS, ENCOUNTER_INTERVAL: 180, EXPLORE_WEIGHTS, EXPLORE_CHOICES, EXPLORE_POINTS, TAM_MA_MAX, TAM_MA_BREAK_PENALTY, TAM_MA_CLEANSE, SECTS, SECT_RANKS, SECT_DISCIPLES, sectDiscipleForRoot, SECT_MISSIONS, SECT_SHOP, SECT_BOOKS };
   root.HU_ADVENTURE_DATA = data;
   if (typeof module !== 'undefined' && module.exports) module.exports = data;
 })(typeof window !== 'undefined' ? window : globalThis);

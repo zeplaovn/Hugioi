@@ -109,7 +109,8 @@
   const img = (key, cls = '') => {
     const x = H.item(key);
     const v = A.itemImg(x);
-    return `<img class="${cls}" loading="lazy" decoding="async" src="${v.src}"${v.style ? ` style="${esc(v.style)}"` : ''} alt="${esc(x?.name || '')}">`;
+    const q = x && Number.isInteger(x.sub) && x.sub >= 0 && x.sub <= 3 ? ` data-q="${x.sub}"` : '';
+    return `<img class="${cls}"${q} loading="lazy" decoding="async" src="${v.src}"${v.style ? ` style="${esc(v.style)}"` : ''} alt="${esc(x?.name || '')}">`;
   };
   const codeAttr = key => `data-code="${esc(key)}"`;
   const bar = (percent, cls = '', id = '') =>

@@ -1818,8 +1818,8 @@
         $('tribStatus').textContent = result.events.length ? 'Thiên kiếp đã qua, đạo cơ tái tạo.' : 'Đạo cơ đã thành · mở ra cảnh giới mới.';
         $('tribResult').className = 'trib-result success';
         const chaosNote = result.awaken
-          ? `<p class="root-awaken">✦ Lôi kiếp tẩy luyện: <b>${esc(result.awaken.from)} linh căn</b> hóa thành <b>Hỗn Độn linh căn</b>! (xác suất ${pct(result.awaken.chance)})</p>`
-          : (result.events.length && g.chaosChance() > 0 ? `<p class="info-note">Linh căn chưa hóa Hỗn Độn. Lần vượt lôi kiếp sau: ${pct(g.chaosChance())}.</p>` : '');
+          ? `<p class="root-awaken">✦ Lôi kiếp tẩy luyện: <b>${esc(result.awaken.from)} linh căn</b> hóa thành <b>Hỗn Độn linh căn</b>!</p>`
+          : '';
         $('tribResult').innerHTML = `<h3 class="gold">${esc(g.realmLabel())}</h3><p>Xác suất ${pct(result.chance)} · hộ kiếp còn lại đã tiêu hao. Cảnh giới mới mở ra trước mắt.</p>${chaosNote}`;
         if (result.awaken) UI.toast(result.awaken.from + ' linh căn hóa thành Hỗn Độn linh căn!', { type: 'gold', title: 'Linh căn thức tỉnh' });
         $('tribHpText').textContent = num(s.hp) + ' / ' + num(g.stats().HP);

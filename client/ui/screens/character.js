@@ -84,15 +84,15 @@
   }
 
   function skills() {
-    const s = UI.s(), g = UI.g();
+    const s = UI.s();
     const room = H.MANUALS.slots(s.realm);
     const entry = key => {
       const x = H.item(key), sc = H.MANUALS.school(x), on = s.activeManuals.includes(key);
       const state = sc === 'nghe' ? '<span class="gold">Đã mở nghề</span>' : btn(on ? 'Dừng vận hành' : 'Vận hành', 'activate', codeAttr(key));
       const cast = sc === 'ngoai' && on ? btn('Thi triển', 'castManual', codeAttr(key), false, 'btn-outline') : '';
       const q = F.SUBPHAM[x.sub];
-      return `<div class="technique-item">${img(key)}<div><h3>${esc(x.name)}</h3>
-        <p>${x.realm} · ${L ? L.span(q, 'quality', q) : esc(q)} · Thuần thục ${pct(s.learned[key])}</p><p>${esc(H.MANUALS.describe(x))}</p></div>
+      return `<div class="technique-item technique-compact">${img(key)}<div><h3>${esc(x.name)}</h3>
+        <p>${x.realm} · ${L ? L.span(q, 'quality', q) : esc(q)} · thuần thục ${pct(s.learned[key])}</p><p class="technique-desc">${esc(H.MANUALS.describe(x))}</p></div>
         <div class="technique-actions">${cast}${state}</div></div>`;
     };
     const group = (sc, title, hint) => {
@@ -105,16 +105,8 @@
     const learned = group('ngoai', 'Ngoại tu · chủ động', 'Đặt vào ô để thi triển khi chiến đấu; khi tự động chiến đấu, skill sẵn sàng sẽ tự được thi triển. Tốn linh lực và có hồi chiêu.')
       + group('noi', 'Nội tu · bị động', 'Đặt vào ô, luôn có hiệu lực: tăng tốc độ hấp thụ linh khí, sinh lực và phòng ngự.')
       + group('nghe', 'Bí tịch nghề', 'Không chiếm ô. Học xong là mở nghề; sách phẩm cao tăng tỉ lệ thành công, chất lượng thành phẩm và mở đan hiếm.');
-    const ups = ['Công kích +2%', 'Tốc độ hấp thụ linh khí +2%', 'Phòng thủ +2%', 'Né tránh +0,5%'].map((name, i) => {
-      const n = s.tech[i] - 1;
-      return card(`${name} · ${n}/20`, row('Giá một cấp', moneyHTML(F.cost(g.upgradeBase(i), 1.15, n))) +
-        `<div class="action-group">${[1, 10, 'max'].map(k => btn(k === 'max' ? 'Tối đa' : '×' + k, 'upgrade', `data-index="${i}" data-count="${k}"`, n >= 20, 'btn-outline')).join('')}</div>`);
-    }).join('');
     return `<p class="screen-lead">Ngoại tu là skill chủ động, nội tu là skill bị động, mỗi hệ có số ô riêng mở dần theo cảnh giới. Thuần thục tăng khi tu luyện; thấp hơn một cảnh giới giảm hiệu quả. Phẩm chất sách quyết định độ mạnh.</p>
-      ${learned}
-      <h3 class="section-title">Bồi dưỡng theo cảnh giới</h3>
-      <p class="info-note">Chi phí mỗi bậc tăng ×1,15. Tu luyện và củng cố đạo cơ có thể tăng tối đa 40% tốc độ hấp thụ linh khí; phần bồi dưỡng thường sẽ bắt đầu lại khi sang đại cảnh giới mới.</p>
-      <div class="screen-grid">${ups}</div>`;
+      ${learned}`;
   }
 
   /* Sơ đồ trực quan, chỉ tra cứu kinh mạch dự kiến, chưa tạo trạng thái mới trên máy chủ. */
@@ -305,7 +297,7 @@
     render: tab => header() + tabs(TABS, tab) + `<div class="screen-body">${{ stats, skills, talents, roots, bag }[tab]()}</div>`,
     signature: () => {
       const s = UI.s();
-      return [s.realm, s.stage, UI.session.pavilion?.balance || 0, s.meta?.points || 0, Object.keys(s.meta?.achievements || {}).length, ...s.rootCraft.essence, ...s.rootCraft.levels, s.sect.id].join('|');
+      return [s.realm, s.stage, UI.session.pavilion?.balance || 0, s.meta?.points || 0, Object.keys(s.meta?.achievements || {}).length, s.sect.id].join('|');
     }
   });
 

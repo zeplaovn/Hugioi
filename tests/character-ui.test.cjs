@@ -30,7 +30,8 @@ test('màn Nhân vật có năm tab, gồm Công pháp và Thiên phú', () => {
 test('tab Thiên phú và Công pháp có nội dung riêng, tab Đạo thể không còn lẫn vào', () => {
   const { screen } = setup();
   assert.match(screen.render('talents'), /Thiên phú khởi nguyên/);
-  assert.match(screen.render('skills'), /Bồi dưỡng theo cảnh giới/);
+  assert.match(screen.render('skills'), /Ngoại tu · chủ động/);
+  assert.doesNotMatch(screen.render('skills'), /Bồi dưỡng theo cảnh giới/);
   assert.doesNotMatch(screen.render('stats'), /talent-list/);
 });
 

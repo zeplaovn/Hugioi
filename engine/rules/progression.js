@@ -100,12 +100,12 @@
         st.DEF += active.filter(b => b.type === 'def').reduce((sum, b) => sum + b.value, 0);
         dodge += active.filter(b => b.type === 'dodge').reduce((sum, b) => sum + b.value, 0);
         st.HP *= (1 + (rb.hp || 0)) * (1 + (tal.canCot || 0) * .02) * (1 + H.PAVILION.bonus(s.pavilion?.canCot)) * (1 + e.guard) * (1 + rt.hp);
-        st.DEF *= (1 + e.guard + .02 * (s.tech[2] - 1)) * (1 + rt.guard);
+        st.DEF *= (1 + e.guard) * (1 + rt.guard);
         st.ATK *= (1 + (rb.atk || 0)) * (1 + (tal.canCot || 0) * .02) * (1 + H.PAVILION.bonus(s.pavilion?.canCot)) *
-          (1 + e.attack + .02 * (s.tech[0] - 1) + s.buffs.filter(b => b.type === 'attack' && b.end > now).reduce((n, b) => n + b.points, 0)) *
+          (1 + e.attack + s.buffs.filter(b => b.type === 'attack' && b.end > now).reduce((n, b) => n + b.points, 0)) *
           (1 + rt.attack + (sect?.attack || 0));
-        st.CRIT = Math.min(.75, (F.crit_rate(.01 * (s.tech[0] - 1) + (tal.vanKhi || 0) * .005 + luck) + rt.crit + (sect?.crit || 0) + crit) * (1 + H.PAVILION.bonus(s.pavilion?.vanKhi)));
-        st.DODGE = Math.min(.6, F.dodge_rate(.005 * (s.tech[3] - 1)) + rt.dodge + dodge);
+        st.CRIT = Math.min(.75, (F.crit_rate((tal.vanKhi || 0) * .005 + luck) + rt.crit + (sect?.crit || 0) + crit) * (1 + H.PAVILION.bonus(s.pavilion?.vanKhi)));
+        st.DODGE = Math.min(.6, F.dodge_rate(0) + rt.dodge + dodge);
         st.STA = (100 + sta) * (1 + rt.sta);
         st.CRIT_DMG = 1.5 + rt.critDmg;
         st.CP = F.combat_power(st.HP, st.ATK, st.DEF, st.CRIT, st.CRIT_DMG);
@@ -188,7 +188,7 @@
       upgradeBase(i) { return F.upgrade_base_cost(this.s.realm, i === 1 ? .02 : .02); },
       upgrade(payload, now) {
         const i = payload.index, wanted = payload.count;
-        if (!Number.isInteger(i) || i < 0 || i > 3) throw Error('Nâng cấp không hợp lệ.');
+        if (i !== 1) throw Error('Nâng cấp không hợp lệ.');
         const owned = this.s.tech[i] - 1, base = this.upgradeBase(i);
         const n = Math.min(20 - owned, wanted === 'max' ? F.max_buy(this.s.stone, base, F.P.UP_GROWTH, owned) : wanted);
         if (n <= 0) throw Error('Đã đủ cấp hoặc không đủ linh thạch.');

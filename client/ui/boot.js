@@ -116,8 +116,6 @@
         ['Ngụy', 'Tứ hành', 'Tam hành', 'Song', 'Thiên'].map(n => '<i class="' + cur(n).trim() + '">' + n + '</i>').join('<s>›</s>') + '</span></div>' +
       '<div class="root-tier" role="listitem"><span class="root-tier-name">Dị linh căn</span><span class="root-tier-list">' +
         H.DI_KEYS.map(k => '<i class="' + (type === 'Dị' && sub === k ? 'is-current' : '') + '">' + H.DI_LINH_CAN[k].name + '</i>').join('<s>·</s>') + '</span></div>' +
-      '<div class="root-tier" role="listitem"><span class="root-tier-name">Chí tôn</span><span class="root-tier-list">' +
-        ['Hỗn Độn'].map(n => '<i class="' + cur(n).trim() + '">' + n + '</i>').join('<s>·</s>') + '</span></div>' +
       '</div>';
     return '<div class="info-title">' + rootLabelHtml(type, sub, { variant: 'badge' }) +
       ' <span class="root-group root-group-' + esc(info.group) + '">' + esc(group ? group.name : '') + '</span></div>' +
@@ -126,7 +124,7 @@
       '<div class="small">' + esc(info.desc) + '</div>' + diBox +
       (descs ? '<div class="root-elem-title">' + (type === 'Dị' ? 'Hệ ngũ hành gốc' : 'Ngũ hành') + '</div>' : '') +
       '<div class="root-elem-list">' + descs + '</div>' + tiers +
-      '<div class="root-doc"><b>Dị ≠ Thiên:</b> Thiên là một hệ ngũ hành thuần; Dị là biến thể cao cấp (Băng, Lôi, Phong, Độc) có thế mạnh riêng. <b>Hỗn Độn</b> không gieo được khi tạo nhân vật.</div>' +
+      '<div class="root-doc"><b>Dị ≠ Thiên:</b> Thiên là một hệ ngũ hành thuần; Dị là biến thể cao cấp (Băng, Lôi, Phong, Độc) có thế mạnh riêng.</div>' +
       rootRulesHtml() +
       '<div class="dim small">Gieo lại xúc xắc để đổi linh căn. Điểm ngũ hành quyết định loại linh căn và thiên phú chiến đấu.</div>';
   }
@@ -145,7 +143,7 @@
       '<div class="rule-line"><span>Tương sinh</span><span>' + chain + ' → Mộc</span></div>' +
       '<div class="rule-line"><span>Tương khắc (+20% / −20% sát thương)</span><span>' + khac + ' → Mộc</span></div>' +
       '<div class="rule-line"><span>Nguồn biến dị Dị linh căn (×2.0)</span><span>' + di + '</span></div>' +
-      '<div class="rule-line"><span>Hỗn Độn linh căn (×3.0)</span><span>Chỉ hình thành khi độ kiếp lên đại cảnh giới; không bẩm sinh, không đoạt được.</span></div></div>';
+      '</div>';
   }
 
   /* Độ tinh khiết linh căn (điểm trung bình các hệ chính) lấy từ data/meridians.js. */

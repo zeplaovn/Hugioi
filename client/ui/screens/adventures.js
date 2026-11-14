@@ -24,7 +24,6 @@
   const sectMeasured = () => !!UI.session?.playerId && measuredPlayer === UI.session.playerId;
   UI.sectMeasured = sectMeasured;
   const clock = a => `<progress class="adventure-progress" max="100" value="0" data-job-start="${a.start}" data-job-end="${a.end}" aria-label="Tiến độ chuyến đi"></progress>${row('Còn lại', live(a.end))}`;
-  const essenceText = a => a.map((n, i) => n ? `${elementLabel(i)} ×${num(n)}` : '').filter(Boolean).join(' · ');
   const date = at => new Date(at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
   function dungeonResult(r) {
@@ -32,8 +31,7 @@
     return card(d.name + ' · ' + r.floors + '/' + d.floors + ' tầng',
       `<p class="${r.success ? 'gold' : 'muted'}">${r.success ? 'Đã hạ ' + d.boss : 'Đã rút lui dưỡng thương.'}${r.first ? ' · Thông quan đầu tiên!' : ''}</p>` +
       row('Linh thạch', moneyHTML(r.stone)) + row('Tu vi thực nhận', '+' + num(r.exp)) +
-      (r.essence.some(Boolean) ? row('Tinh hoa', essenceText(r.essence)) : '') +
-      '<button class="text-btn" data-go="character:roots">Tôi luyện linh căn ›</button>', { eyebrow: 'KẾT QUẢ GẦN NHẤT', cls: 'adventure-result' });
+      '', { eyebrow: 'KẾT QUẢ GẦN NHẤT', cls: 'adventure-result' });
   }
   /* Thanh chỉ số có nhãn chữ và vai trò meter để đọc được bằng trình đọc màn hình. */
   const meter = (label, value, max, cls) => {
@@ -125,7 +123,7 @@
     const s = UI.s(), g = UI.g();
     return `<p class="info-note">Vật phẩm gần bậc hiện tại; giá cống hiến tăng theo cảnh giới. Tiêu cống hiến không giảm chức vị.</p><div class="peek-list">${H.SECT_SHOP.filter(x => !x.sect || x.sect === s.sect.id).map(d => {
       const o = g.sectShopOffer(d.id);
-      const buttons = d.id === 'essence' ? g.activeElements().map(i => btn(elementLabel(i), 'sectBuy', `data-id="essence" data-element="${i}"`, o.locked || s.sect.contribution < o.cost, 'btn-outline')).join('') : btn('Đổi · ' + num(o.cost), 'sectBuy', `data-id="${d.id}"`, o.locked || s.sect.contribution < o.cost);
+      const buttons = btn('Đổi · ' + num(o.cost), 'sectBuy', `data-id="${d.id}"`, o.locked || s.sect.contribution < o.cost);
       return UI.kit.peekRow('sectshop:' + d.id, o.item?.name || d.name, {
         eyebrow: 'TÀNG BẢO CÁC', mark: o.locked ? '🔒' : '◈', cls: o.locked ? 'is-locked' : '',
         body: row('Số lượng', '×' + d.count) + row('Cống hiến', num(o.cost)) + `<p class="info-note">${H.SECT_RANKS[d.rank].name}${o.item ? ' · ' + F.REALMS[o.item.tier] : ''}</p><div class="action-group">${buttons}</div>`
@@ -190,7 +188,7 @@
       (s.sect.last && sub === 'missions' ? `<p class="adventure-result info-note">${esc(s.sect.last.text)}</p>` : '') + panels[sub]();
   }
 
-  /* Tổng quan linh căn, thế mạnh và cơ hội hóa Hỗn Độn. */
+  /* Tổng quan linh căn và thế mạnh. Hỗn Độn là bí mật: chỉ hiện khi người chơi đã có. */
   function rootOverview() {
     const s = UI.s(), g = UI.g(), type = s.rootType, info = H.ROOT_TYPES[type] || { group: 'ngu_hanh', desc: '' };
     const group = H.ROOT_GROUPS.find(x => x.id === info.group);
@@ -201,10 +199,6 @@
       if (di) extra = `<div class="root-di"><b>${elementLabel(s.rootSub, di.name)} · ${esc(di.role)}</b><p>${esc(di.desc)}</p><p class="root-di-fx">Thế mạnh: ${esc(UI.rootEffectText(di.effects))}</p></div>`;
     } else if (type === 'Hỗn Độn') {
       extra = `<div class="root-di"><b>Giữ các hệ thành phần ban đầu</b><p>Không bị khắc; khắc ngũ hành và dị linh căn +10%.</p></div>`;
-    } else if (g.chaosChance() > 0) {
-      extra = `<div class="root-chaos"><b>Con đường Hỗn Độn</b>` + row('Cơ hội hóa Hỗn Độn (lôi kiếp kế tiếp)', pct(g.chaosChance())) +
-        row('Đã vượt lôi kiếp mà chưa hóa', num(s.chaosTries || 0) + ' lần') +
-        '<p class="info-note">Linh căn ngũ hành có cơ hội hóa sau khi vượt lôi kiếp đại cảnh giới. Cơ hội ban đầu là 1%; Vận Khí và kiếp vận tích lũy tăng cơ hội.</p></div>';
     }
     const body = `<p>${esc(info.desc)}</p>${row('Tốc độ hấp thụ linh khí', '×' + F.LINH_CAN_RATE[type])}${combat > 1 ? row('Chiến lực', '×' + combat) : ''}${row('Chịu lôi kiếp', '×' + trib)}${extra}`;
     const rank = (types, cur) => types.map(n => L
@@ -214,24 +208,35 @@
       `<div class="root-class"><b>Dị linh căn</b><div>${H.DI_KEYS.map(k => L
         ? L.span(H.DI_LINH_CAN[k].name, 'element', k, { className: 'root-chip' + (type === 'Dị' && s.rootSub === k ? ' is-current' : '') })
         : `<span class="root-chip ${type === 'Dị' && s.rootSub === k ? 'is-current' : ''}">${esc(H.DI_LINH_CAN[k].name)}</span>`).join('<span class="root-sep">·</span>')}</div><p class="info-note">Dị khắc hệ gốc và không bị hệ gốc khắc.</p></div>` +
-      `<div class="root-class"><b>Chí tôn</b><div>${rank(['Hỗn Độn'], type)}</div><p class="info-note">Hỗn Độn không gieo bẩm sinh; chỉ thức tỉnh sau khi vượt lôi kiếp.</p></div>`;
+      (type === 'Hỗn Độn' ? `<div class="root-class"><b>Chí tôn</b><div>${rank(['Hỗn Độn'], type)}</div></div>` : '');
     return card(rootLabelHtml(type, s.rootSub, 'badge'), body, { eyebrow: (group ? group.name : 'Linh căn').toUpperCase() }) + card('Phân loại linh căn', classes, { eyebrow: 'BA NHÓM' });
   }
 
+  const ELEMENT_TEXT = [
+    'Sắc bén, thiên về công phạt.', 'Sinh cơ bừng bừng, thiên về sinh lực và hồi phục.', 'Uyển chuyển, thiên về linh lực và né tránh.',
+    'Bùng nổ, thiên về uy lực và sát thương bạo kích.', 'Vững chãi, thiên về phòng thủ và giảm sát thương.'
+  ];
+  /* Tab Kinh mạch: linh căn của nhân vật và kiến thức ngũ hành cơ bản. */
   function roots() {
-    const s = UI.s(), g = UI.g(), c = s.rootCraft, els = g.activeElements(), scale = 1 / Math.sqrt(Math.max(1, els.length));
-    const labels = { attack: 'Công kích', hp: 'Sinh lực', guard: 'Phòng thủ', rate: 'Tốc độ hấp thụ linh khí', crit: 'Bạo kích', dodge: 'Né tránh', regen: 'Hồi sinh lực/giây' };
-    const effectText = (i, level) => Object.entries(H.TEMPER_EFFECTS[i]).map(([k, v]) => labels[k] + ' +' + (v * level * scale * 100).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + (['crit', 'dodge', 'regen'].includes(k) ? ' điểm %' : '%')).join(' · ');
+    const s = UI.s(), els = UI.g().activeElements();
+    const names = H.ELEMENT_NAMES;
+    const elements = names.map((name, i) => {
+      const beats = names[H.BEATS[i]], beatenBy = names[H.BEATS.indexOf(i)];
+      const have = els.includes(i);
+      return card(`${elementLabel(i, name)} · ${s.roots[i]} điểm${have ? ' · đã có' : ''}`,
+        `<p>${esc(ELEMENT_TEXT[i])}</p><p class="root-di-fx">Thế mạnh: ${esc(UI.rootEffectText(H.ELEMENT_BASE[i]))}</p>` +
+        row('Khắc', beats) + row('Bị khắc bởi', beatenBy), { cls: have ? '' : 'adventure-locked' });
+    }).join('');
+    const rules = card('Tương sinh và tương khắc',
+      '<p><b>Tương sinh:</b> Mộc → Hỏa → Thổ → Kim → Thủy → Mộc.</p><p><b>Tương khắc:</b> Kim → Mộc → Thổ → Thủy → Hỏa → Kim.</p>' +
+      '<p class="info-note">Đánh trúng hệ bị khắc: sát thương +20%. Bị hệ khắc mình đánh: −20%. Dị linh căn khắc hệ gốc và không bị hệ gốc khắc.</p>', { eyebrow: 'QUY LUẬT' });
+    const count = card('Số hệ quyết định loại linh căn',
+      '<p>Mỗi hệ đạt từ 50 điểm là một hệ linh căn. Càng ít hệ, linh lực càng tinh thuần và hấp thụ linh khí càng nhanh: Ngụy (5 hệ) → Tứ hành → Tam hành → Song → Thiên (1 hệ thuần).</p>' +
+      '<p class="info-note">Dị linh căn là biến thể cao cấp của một hệ gốc (Băng, Lôi, Phong, Độc), có thế mạnh riêng.</p>', { eyebrow: 'PHÂN LOẠI' });
     return `<div class="screen-grid">${rootOverview()}</div>
-      <h3 class="root-section-title">Ngũ hành · tôi luyện từng hệ <small>(tách riêng khỏi Dị linh căn)</small></h3>
-      ${card('Tôi luyện linh căn', '<p>Dùng Tinh hoa cùng hệ để tôi luyện đến cấp 10. Mỗi cấp tăng chỉ số và ưu thế nguyên tố trong bí cảnh.</p><p class="info-note">Hệ từ 50 điểm mới tôi luyện được. Hiệu quả chia √số hệ để cân bằng linh căn nhiều hệ. Cấp và Tinh hoa thuộc kiếp hiện tại.</p><button class="text-btn" data-go="world:dungeons">Tìm Tinh hoa trong bí cảnh ›</button>', { eyebrow: 'NGŨ HÀNH' })}
-      <div class="adventure-grid">${H.ELEMENT_NAMES.map((name, i) => {
-        const on = els.includes(i), level = c.levels[i], cost = g.temperCost(i), max = level >= H.TEMPER_MAX;
-        return card(`${elementLabel(i, name)} · ${s.roots[i]} điểm`, row('Tôi luyện', level + '/' + H.TEMPER_MAX) + bar(level * 10) + row('Tinh hoa', num(c.essence[i])) +
-          (on ? `<p>${effectText(i, level)}</p>${!max ? '<p class="info-note">Tầng tôi luyện kế tiếp: ' + effectText(i, level + 1) + '</p>' : ''}` : '<p class="info-note">Hệ này chưa đạt 50 điểm.</p>') +
-          btn(!on ? 'Chưa có linh căn' : max ? 'Đã tối đa' : 'Tôi luyện · ' + cost + ' Tinh hoa', 'temperRoot', `data-index="${i}"`, !on || max || c.essence[i] < cost), { cls: on ? '' : 'adventure-locked' });
-      }).join('')}</div>
-      <details class="adventure-details"><summary>Ngũ hành & hệ số linh căn</summary>${card('Tương khắc', '<p>Kim → Mộc → Thổ → Thủy → Hỏa → Kim.</p><p>Khắc hệ +20%; bị khắc −20%. Dị khắc hệ gốc, Hỗn Độn khắc ngũ hành +10%.</p>')}</details>`;
+      <h3 class="root-section-title">Ngũ hành cơ bản</h3>
+      <div class="adventure-grid">${elements}</div>
+      <div class="screen-grid">${rules}${count}</div>`;
   }
   function update() {
     const now = UI.session.serverNow();
@@ -277,11 +282,6 @@
     if (b && !b.disabled) { e.preventDefault(); b.click(); }
   });
   UI.action('dungeonAbort', async () => { UI.modal('Rút khỏi bí cảnh?', '<p>Chuyến đi hiện tại sẽ không có phần thưởng.</p>', async () => await UI.command('abortDungeon'), 'Rút lui'); return UI.KEEP; });
-  UI.action('temperRoot', async (el, d) => {
-    const i = Number(d.index), level = await UI.command('temperRoot', { index: i });
-    UI.toast('Linh căn ' + element(i) + ' đạt cấp ' + level + '.', { type: 'gold', title: 'Tôi luyện' });
-    UI.vfx?.ring('hero', color(i)); UI.vfx?.effect('qi');
-  });
   UI.action('sectPanel', async (el, d) => { if (['missions', 'library', 'shop', 'ranks','exploration','dungeons'].includes(d.panel)) UI.go('sect:' + d.panel); });
   UI.action('borrowSectBook', async (el, d) => { const book = await UI.command('buySect', { id: d.id }); UI.toast('Đã mượn ' + book.name + ' · còn ' + num(book.points) + ' điểm lịch luyện.', { type: 'success', title: 'Tàng Kinh Các' }); });
   UI.action('sectRepeat', async () => { await UI.command('setSectRepeat', { enabled: !UI.s().sect.repeat }); });

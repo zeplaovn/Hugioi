@@ -78,7 +78,6 @@
         const full = floors === d.floors, first = full && record.clears === 0, fraction = floors / d.floors;
         const stone = F.income_rate(d.realm) * d.seconds * .45 * fraction * (first ? 2 : 1) * bonus;
         let exp = this.gainExp(F.base_rate(d.realm) * d.seconds * .35 * fraction * (first ? 2 : 1) * bonus);
-        const essence = [0, 0, 0, 0, 0];
         if (full) {
           const boss = H.DESIGN.raw.boss.find(x => x['tên boss'] === d.boss);
           if (boss) {
@@ -86,9 +85,6 @@
             exp += reward.exp;
             for (const [code, n] of Object.entries(reward.items)) this.log('Thủ lĩnh rơi ' + H.item(code).name + ' ×' + n + '.');
           }
-          const i = d.element >= 0 ? d.element : pick(this.activeElements().length ? this.activeElements() : [0, 1, 2, 3, 4], rng);
-          essence[i] = 1 + Math.floor(rng() * 2) + (d.floors >= 8 ? 1 : 0) + (first ? 3 : 0) + (bonus > 1 ? 1 : 0);
-          this.addEssence(i, essence[i]);
           record.clears++;
           if (first) record.firstAt = at;
         }
@@ -96,10 +92,9 @@
         record.runs++;
         record.best = Math.max(record.best, floors);
         s.dungeon.records[d.id] = record;
-        const essText = essence.map((n, i) => n ? n + ' Tinh hoa ' + ELEMENT_NAMES[i] : '').filter(Boolean).join(', ');
         const text = d.name + ' · ' + floors + '/' + d.floors + ' tầng' + (full ? ' · hạ ' + d.boss : ' · rút lui dưỡng thương') +
-          (first ? ' · thông quan đầu tiên!' : '.') + ' Nhận ' + F.format_linh_thach(stone) + ', ' + F.fmt(exp) + ' tu vi' + (essText ? ', ' + essText : '') + '.';
-        const result = { id: d.id, at, floors, success: full, first, stone, exp, essence, text };
+          (first ? ' · thông quan đầu tiên!' : '.') + ' Nhận ' + F.format_linh_thach(stone) + ', ' + F.fmt(exp) + ' tu vi.';
+        const result = { id: d.id, at, floors, success: full, first, stone, exp, text };
         s.dungeon.last = result;
         this.log('Bí cảnh · ' + text);
         return result;
@@ -229,10 +224,6 @@
       resolveEncounter(ev, now) {
         const s = this.s, mult = ENCOUNTER_RARITIES[ev.rarity].mult, reward = [];
         const exp = () => reward.push('tu vi +' + F.fmt(this.gainExp(F.base_rate(s.realm) * 40 * mult)));
-        const essence = all => {
-          const els = this.activeElements(), selected = all ? els : [pick(els.length ? els : [0, 1, 2, 3, 4], this.rng)];
-          for (const i of selected) { const n = ev.rarity + 1; this.addEssence(i, n); reward.push('Tinh hoa ' + ELEMENT_NAMES[i] + ' +' + n); }
-        };
         const itemKinds = { herb: ['HERB'], seed: ['SEED'], pill: ['PILL', 'TU_VI'], material: ['MAT'], manual: ['BT'], break: ['PILL', 'DOT_PHA'] };
         if (itemKinds[ev.effect]) {
           const [kind, effect] = itemKinds[ev.effect];
@@ -252,8 +243,7 @@
           s.hp += n;
           reward.push('sinh lực +' + F.fmt(n));
           exp();
-        } else if (ev.effect === 'essence' || ev.effect === 'allEssence') essence(ev.effect === 'allEssence');
-        else if (ev.effect === 'life' || ev.effect === 'insight') {
+        } else if (ev.effect === 'life' || ev.effect === 'insight') {
           const years = Math.max(1, Math.round(F.lifespan(s.realm) * .01));
           s.extraLife += years;
           reward.push('thọ nguyên +' + F.fmt(years) + ' năm');

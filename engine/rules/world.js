@@ -1,17 +1,17 @@
-/* Miền luật: world — nhiệm vụ, kỳ ngộ thủ công, tông môn và tôi luyện linh căn. */
+/* Miền luật: world — nhiệm vụ, kỳ ngộ thủ công, tông môn và thế mạnh linh căn. */
 (function (root) {
   'use strict';
   const domain = 'world';
   const commands = Object.freeze([
     'claimQuest', 'claimFragments', 'manualEncounter', 'joinSect', 'leaveSect', 'donateSect',
     'setBlessing', 'setSectRepeat', 'startSectMission', 'claimSectMission', 'abortSectMission',
-    'buySect', 'temperRoot', 'storyMark'
+    'buySect', 'storyMark'
   ]);
 
   function install(API) {
     const H = API, F = H.F, {
       ITEMS, ZONES, QUESTS, item, DESIGN,
-      ELEMENT_NAMES, BEATS, TEMPER_EFFECTS, TEMPER_MAX,
+      ELEMENT_NAMES, BEATS,
       SECTS, SECT_RANKS, SECT_MISSIONS, SECT_SHOP
     } = H;
     const at = (game, now) => Number.isFinite(now) ? now : game.s.lastUpdate;
@@ -131,27 +131,14 @@
       activeElements() { return ELEMENT_NAMES.map((_, i) => i).filter(i => this.s.roots[i] >= 50); },
       rootEffects() {
         const out = { attack: 0, hp: 0, mp: 0, sta: 0, guard: 0, rate: 0, crit: 0, dodge: 0, regen: 0, heal: 0, mpRegen: 0, critDmg: 0, reduction: 0 };
-        const els = this.activeElements(), scale = 1 / Math.sqrt(Math.max(1, els.length));
-        for (const i of els) for (const [key, value] of Object.entries(TEMPER_EFFECTS[i])) out[key] += value * this.s.rootCraft.levels[i] * scale;
-        const base = [{ attack: .05, crit: .02 }, { hp: .08, heal: .15 }, { mp: .08, dodge: .02, mpRegen: .10 }, { attack: .08, critDmg: .05 }, { guard: .08, hp: .05, reduction: .05 }];
+        const els = this.activeElements();
+        const base = H.ELEMENT_BASE;
         const add = effects => { for (const [key, value] of Object.entries(effects || {})) out[key] += value; };
         if (this.s.rootType === 'Dị') add(H.DI_LINH_CAN[this.s.rootSub]?.effects);
         else if (this.s.rootType === 'Hỗn Độn') add({ hp: .15, mp: .15, attack: .10, guard: .10, dodge: .05, crit: .05, critDmg: .20 });
         else for (const i of els) add(base[i]);
         return out;
       },
-      temperCost(i) { return 2 + 2 * (this.s.rootCraft.levels[i] || 0); },
-      temperRoot(payload) {
-        const i = payload.index, c = this.s.rootCraft, cost = this.temperCost(i);
-        if (!Number.isInteger(i) || !this.activeElements().includes(i)) throw Error('Chỉ tôi luyện hệ linh căn đạt 50 điểm.');
-        if (c.levels[i] >= TEMPER_MAX) throw Error('Đã tôi luyện tối đa.');
-        if (c.essence[i] < cost) throw Error('Không đủ Tinh hoa ' + ELEMENT_NAMES[i] + '.');
-        c.essence[i] -= cost;
-        c.levels[i]++;
-        this.log('Tôi luyện linh căn ' + ELEMENT_NAMES[i] + ' · cấp ' + c.levels[i] + '/' + TEMPER_MAX + '.');
-        return c.levels[i];
-      },
-      addEssence(i, n) { this.s.rootCraft.essence[i] = Math.min(1e9, this.s.rootCraft.essence[i] + n); },
       affinity(element) {
         if (element < 0) return 0;
         const els = this.activeElements();
@@ -278,15 +265,13 @@
       },
       buySect(payload) {
         if (H.SECT_BOOKS.some(book => book.id === payload.id)) return this.borrowSectBook(payload);
-        const id = payload.id, element = payload.element ?? this.activeElements()[0];
+        const id = payload.id;
         const offer = this.sectShopOffer(id), x = this.s.sect;
         if (!offer || offer.locked) throw Error('Vật phẩm tông môn chưa mở.');
         if (x.contribution < offer.cost) throw Error('Không đủ cống hiến.');
-        if (id === 'essence' && !this.activeElements().includes(element)) throw Error('Hệ linh căn không hợp lệ.');
         x.contribution -= offer.cost;
-        if (id === 'essence') this.addEssence(element, offer.count);
-        else this.add(offer.item.code, offer.count);
-        const name = id === 'essence' ? 'Tinh hoa ' + ELEMENT_NAMES[element] : offer.item.name;
+        this.add(offer.item.code, offer.count);
+        const name = offer.item.name;
         this.log('Kho tông môn · nhận ' + name + ' ×' + offer.count + ' · −' + offer.cost + ' cống hiến.');
         return { ...offer, name };
       },

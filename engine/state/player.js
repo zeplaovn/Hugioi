@@ -60,7 +60,6 @@
   });
   const adventureDefaults = () => ({
     sect: sectDefault(),
-    rootCraft: { essence: [0, 0, 0, 0, 0], levels: [0, 0, 0, 0, 0] },
     dungeon: { active: null, run: null, records: {}, last: null },
     encounter: { index: 0, usedAt: 0, clock: 0, total: 0, journal: {}, recent: [] }
   });
@@ -100,13 +99,8 @@
     return { ...createBase(now), ...adventureDefaults() };
   }
 
-  /* Nhiệm vụ/bí cảnh/kỳ ngộ/tôi luyện nằm trong state nhưng dữ liệu định nghĩa ở data/adventures.js. */
+  /* Nhiệm vụ/bí cảnh/kỳ ngộ nằm trong state nhưng dữ liệu định nghĩa ở data/adventures.js. */
   function normalizeAdventures(x, raw, now, Game) {
-    x.rootCraft = {
-      essence: ELEMENT_NAMES.map((_, i) => integer(raw.rootCraft?.essence?.[i])),
-      levels: ELEMENT_NAMES.map((_, i) => x.roots[i] >= 50 ? integer(raw.rootCraft?.levels?.[i], 0, A.TEMPER_MAX) : 0)
-    };
-
     const old = object(raw.sect) ? raw.sect : {}, joined = !!old.joined;
     const id = joined ? (SECTS.some(s => s.id === old.id) ? old.id : 'thanhvan') : '';
     x.sect = {
@@ -139,8 +133,7 @@
       return {
         id: v.id, at: finite(v.at, 0, now), text: String(v.text || '').slice(0, 500),
         stone: finite(v.stone), exp: finite(v.exp), contribution: integer(v.contribution),
-        success: !!v.success, floors: integer(v.floors, 0, 10), first: !!v.first,
-        essence: ELEMENT_NAMES.map((_, i) => integer(v.essence?.[i]))
+        success: !!v.success, floors: integer(v.floors, 0, 10), first: !!v.first
       };
     };
     x.sect.last = cleanResult(old.last, SECT_MISSIONS);

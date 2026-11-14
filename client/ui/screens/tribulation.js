@@ -36,7 +36,6 @@
       ${row('Trợ lực từ đan dược', num(s.breakBonus))}
       ${row('Chúc phúc tông môn', s.sect.blessing ? '+10%' : 'Chưa bật')}
       ${row('Hệ số chịu kiếp của linh căn', '×' + (F.LINH_CAN_TRIB[s.rootType] || 1))}
-      ${g.chaosChance() > 0 ? row('Cơ hội hóa Hỗn Độn (lôi kiếp kế tiếp)', pct(g.chaosChance())) + `<p class="info-note">Linh căn ngũ hành có cơ hội hóa Hỗn Độn khi vượt lôi kiếp. Vận Khí và kiếp vận tích lũy tăng cơ hội.</p>` : ''}
       <p class="info-note">Thất bại khiến đạo thân tọa hóa ngay lập tức: mất toàn bộ tiến trình nhân vật, không hồi sinh, không có lần thử kế tiếp. Xác suất không vượt quá 98%; Vận Khí vẫn hỗ trợ khi xác suất đã đạt 95%.</p>`, { eyebrow: 'TỈ LỆ' });
   }
 

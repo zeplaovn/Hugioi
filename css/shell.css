@@ -667,12 +667,12 @@ body.in-game.log-collapsed{--log-panel-h:31px}
 .technique-compact p{font-size:12.5px;line-height:1.35}
 .technique-compact .technique-desc{color:#9fb0a6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .technique-compact .btn{padding:5px 10px;font-size:12.5px;min-height:32px}
-/* Độ hiếm vật phẩm: vầng sáng neon nằm sau ảnh (hạ xám lam, trung lục, thượng tím, cực vàng kim). */
-img[data-q]{--q-neon:#8fa9c4;border-radius:14%;background:radial-gradient(circle at 50% 54%,color-mix(in srgb,var(--q-neon) 68%,transparent) 0,color-mix(in srgb,var(--q-neon) 30%,transparent) 50%,transparent 74%);box-shadow:inset 0 0 12px -3px var(--q-neon),0 0 9px -3px var(--q-neon)}
-img[data-q="1"]{--q-neon:#3df08c}
-img[data-q="2"]{--q-neon:#b873ff}
-img[data-q="3"]{--q-neon:#ffd23d;box-shadow:inset 0 0 14px -2px var(--q-neon),0 0 14px -2px var(--q-neon)}
+/* Độ hiếm vật phẩm: vầng sáng neon nằm sau ảnh (hạ xanh dương, trung tím, thượng vàng, cực ngũ sắc). */
+img[data-q]{--q-neon:#3da5ff;border-radius:14%;background:radial-gradient(circle at 50% 54%,color-mix(in srgb,var(--q-neon) 68%,transparent) 0,color-mix(in srgb,var(--q-neon) 30%,transparent) 50%,transparent 74%);box-shadow:inset 0 0 12px -3px var(--q-neon),0 0 9px -3px var(--q-neon)}
+img[data-q="1"]{--q-neon:#b873ff}
+img[data-q="2"]{--q-neon:#ffd23d;box-shadow:inset 0 0 14px -2px var(--q-neon),0 0 14px -2px var(--q-neon)}
+img[data-q="3"]{background:radial-gradient(circle at 20% 22%,#ff4d6dcc 0,transparent 56%),radial-gradient(circle at 80% 22%,#ffd23dcc 0,transparent 56%),radial-gradient(circle at 86% 76%,#3df08ccc 0,transparent 56%),radial-gradient(circle at 50% 96%,#3dc8ffcc 0,transparent 56%),radial-gradient(circle at 14% 76%,#b873ffcc 0,transparent 56%);box-shadow:inset 0 0 12px -3px #fff9,-4px -3px 12px -4px #ff4d6d,4px -3px 12px -4px #ffd23d,4px 4px 12px -4px #3df08c,-4px 4px 12px -4px #b873ff}
 @media (prefers-reduced-motion:no-preference){
-  img[data-q="3"]{animation:q-neon-pulse 3.2s ease-in-out infinite}
-  @keyframes q-neon-pulse{50%{box-shadow:inset 0 0 18px 0 var(--q-neon),0 0 20px 0 var(--q-neon)}}
+  img[data-q="3"]{animation:q-rainbow 4.5s ease-in-out infinite}
+  @keyframes q-rainbow{50%{box-shadow:inset 0 0 16px -2px #ffffffcc,4px 3px 16px -3px #ff4d6d,-4px 3px 16px -3px #ffd23d,-4px -4px 16px -3px #3df08c,4px -4px 16px -3px #b873ff}}
 }

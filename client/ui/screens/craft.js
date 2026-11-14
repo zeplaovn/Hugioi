@@ -61,7 +61,7 @@
       const j = s.craftQueue[i];
       if (!j) return `<div class="furnace idle"><div class="furnace-img" aria-hidden="true">◍</div><b>Lò ${i + 1}</b><small>Trống · xếp mẻ ở danh sách bên dưới</small></div>`;
       const r = g.recipe(j.code), start = j.end - r.time * 1000;
-      return `<div class="furnace busy" data-start="${start}" data-end-at="${j.end}">${img(j.code, 'furnace-img')}<b>${esc(H.item(j.code).name)}</b>
+      return `<div class="furnace busy" data-start="${start}" data-end-at="${j.end}">${img(j.code, 'furnace-img')}<b>${UI.kit.itemName(H.item(j.code))}</b>
         <small>${pct(j.success)} thành công · ${F.SUBPHAM[j.quality]} phẩm dự kiến</small>
         <div class="meter-bar job-bar"><i></i></div>${live(j.end)}</div>`;
     }).join('');
@@ -86,7 +86,7 @@
         Math.floor(s.stone / r.stone), ...Object.entries(r.herbs).map(([key, n]) => Math.floor(g.ingredientCount(key) / n))));
       const disabled = !ok || available < 1 || !!root.HU_COMMANDS?.activityConflict(s, 'craft');
       return `<section class="card recipe ${ok ? 'ready' : ''}">
-        <div class="row-wrap">${img(x.code, 'recipe-img')}<div><h3>${esc(x.name)}</h3><small class="muted">${x.realm} · ${x.grade}</small></div></div>
+        <div class="row-wrap">${img(x.code, 'recipe-img')}<div><h3>${UI.kit.itemName(x)}</h3><small class="muted">${x.realm} · ${x.grade}</small></div></div>
         <p>${esc(x.description)}</p>
         ${Object.entries(r.herbs).map(([key, n]) => row(esc(H.item(key).name), `<span class="${g.ingredientCount(key) >= n ? 'green-text' : 'danger-text'}">${g.ingredientCount(key)} / ${n}</span>`)).join('')}
         ${row('Chi phí', moneyHTML(r.stone))}${row('Thời gian', duration(r.time))}${row('Thành công', pct(g.craftChance(x.tier)))}
@@ -108,7 +108,7 @@
       const r=g.forgeRecipe(x.code),mat=H.item(r.herb),haveMat=mat?g.ingredientCount(mat.code):0;
       const manualOk=!r.manual||Object.keys(s.learned).some(k=>H.item(k)?.code===r.manual);
       const ok=mat&&haveMat>=r.count&&(!r.ink||g.ingredientCount(r.ink)>0)&&manualOk&&s.stone>=r.stone;
-      return `<article class="shop-item">${img(x.code)}<div><h3>${esc(x.name)}</h3><p>${x.realm} · ${F.SUBPHAM[x.sub]}</p>
+      return `<article class="shop-item">${img(x.code)}<div><h3>${UI.kit.itemName(x)}</h3><p>${x.realm} · ${F.SUBPHAM[x.sub]}</p>
         <p>${r.count} ${esc(mat?.name || 'linh tài')} <span class="${haveMat >= r.count ? 'green-text' : 'danger-text'}">(${haveMat})</span>${r.ink ? ` · 1 ${esc(H.item(r.ink)?.name || 'mực')} <span class="${g.ingredientCount(r.ink) ? 'green-text' : 'danger-text'}">(${g.ingredientCount(r.ink)})</span>` : ''}${r.manual?` · ${esc(H.item(r.manual).name)} (${manualOk?'đã học':'chưa học'})`:''} · ${moneyHTML(r.stone)}</p></div>
         ${btn('Chế tạo', 'forge', codeAttr(x.code), !ok)}</article>`;
     }).join('');

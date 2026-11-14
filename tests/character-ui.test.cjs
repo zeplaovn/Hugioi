@@ -13,7 +13,7 @@ const profile = { name: 'Lý Vô Thường', gender: 'nam', age: 18, race: 'nhan
 function setup() {
   const game = new H.Game(H.createCharacter(profile, NOW, () => 0), () => 0), actions = {}, modals = [];
   const str = x => String(x ?? '');
-  const kit = { abs: str, $: () => null, esc: str, num: str, money: str, moneyHTML: str, pct: str, duration: str, row: (a, b) => `<p>${a}: ${b}</p>`, btn: (a, b, c = '') => `<button data-act="${b}" ${c}>${a}</button>`, img: () => '<img>', codeAttr: code => `data-code="${code}"`, bar: () => '', card: (t, b) => `<section>${t}${b}</section>`, empty: str, tabs: () => '' };
+  const kit = { itemName: x => str(x?.name), abs: str, $: () => null, esc: str, num: str, money: str, moneyHTML: str, pct: str, duration: str, row: (a, b) => `<p>${a}: ${b}</p>`, btn: (a, b, c = '') => `<button data-act="${b}" ${c}>${a}</button>`, img: () => '<img>', codeAttr: code => `data-code="${code}"`, bar: () => '', card: (t, b) => `<section>${t}${b}</section>`, empty: str, tabs: () => '' };
   let screen;
   const ui = { kit, data: { ELEMENTS: [] }, lists: {}, statNames: {}, statDescriptions: {}, view: {}, tabState: {}, session: { pavilion: {} }, s: () => game.s, g: () => game, register: x => { screen = x; }, action(n, f) { actions[n] = f; }, modalActions: new Set(), KEEP: Symbol('keep'), modal: (...a) => modals.push(a), refresh() {}, toast() {}, command: async () => {} };
   const env = { HU_GAME: H, HU_UI: ui, HU_ASSETS: { heroPortrait: () => '/portrait', heroSrc: () => '/meditation' }, document: { addEventListener() {}, querySelectorAll: () => [], elementFromPoint: () => null } };

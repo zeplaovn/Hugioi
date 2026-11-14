@@ -91,7 +91,7 @@
       const state = sc === 'nghe' ? '<span class="gold">Đã mở nghề</span>' : btn(on ? 'Dừng vận hành' : 'Vận hành', 'activate', codeAttr(key));
       const cast = sc === 'ngoai' && on ? btn('Thi triển', 'castManual', codeAttr(key), false, 'btn-outline') : '';
       const q = F.SUBPHAM[x.sub];
-      return `<div class="technique-item technique-compact">${img(key)}<div><h3>${esc(x.name)}</h3>
+      return `<div class="technique-item technique-compact">${img(key)}<div><h3>${UI.kit.itemName(x)}</h3>
         <p>${x.realm} · ${L ? L.span(q, 'quality', q) : esc(q)} · thuần thục ${pct(s.learned[key])}</p><p class="technique-desc">${esc(H.MANUALS.describe(x))}</p></div>
         <div class="technique-actions">${cast}${state}</div></div>`;
     };
@@ -202,7 +202,7 @@
   const qualityOf = x => F.SUBPHAM[x.sub];
   const popCell = (key, from, note = '') => {
     const x = H.item(key), q = qualityOf(x), qClass = L ? ' ' + L.keyClass('quality', q) : '';
-    return `<button type="button" class="pop-item inventory-cell${qClass}" data-select="${esc(key)}" data-popup="1" data-from="${from}" data-sub="${x.sub}" aria-label="${esc(x.name)} · ${q} phẩm${note ? ' · ' + esc(note) : ''}">${img(key)}<span class="pop-name">${esc(x.name)}</span>${note ? `<span class="pop-note">${esc(note)}</span>` : ''}</button>`;
+    return `<button type="button" class="pop-item inventory-cell${qClass}" data-select="${esc(key)}" data-popup="1" data-from="${from}" data-sub="${x.sub}" aria-label="${esc(x.name)} · ${q} phẩm${note ? ' · ' + esc(note) : ''}">${img(key)}<span class="pop-name">${UI.kit.itemName(x)}</span>${note ? `<span class="pop-note">${esc(note)}</span>` : ''}</button>`;
   };
 
   function itemDetail(key, back) {

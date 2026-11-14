@@ -68,10 +68,14 @@
     quality: {
       name: 'Phẩm chất vật phẩm',
       keys: {
-        ha: { name: 'Hạ', color: PALETTE.ash, fx: 'tint', aliases: ['Hạ phẩm', 'common'] },
-        trung: { name: 'Trung', color: PALETTE.jade, fx: 'soft', aliases: ['Trung phẩm', 'uncommon'] },
-        thuong: { name: 'Thượng', color: PALETTE.cyanSoft, fx: 'glow', aliases: ['Thượng phẩm', 'rare'] },
-        cuc: { name: 'Cực', color: PALETTE.gold, fx: 'shimmer', duration: '5s', aliases: ['Cực phẩm', 'epic'] }
+        ha: { name: 'Hạ', color: '#5fb0ff', fx: 'soft', glow: '#3da5ff88', aliases: ['Hạ phẩm', 'common'] },
+        trung: { name: 'Trung', color: '#c58bff', fx: 'glow', glow: '#b873ffaa', aliases: ['Trung phẩm', 'uncommon'] },
+        thuong: { name: 'Thượng', color: '#ffd23d', fx: 'glow', glow: '#ffd23dbb', aliases: ['Thượng phẩm', 'rare'] },
+        cuc: {
+          name: 'Cực', color: '#ffe6a8', fx: 'rainbow', duration: '4.5s', glow: '#ffffff77',
+          gradient: 'linear-gradient(90deg,#ff4d6d,#ffd23d,#3df08c,#3dc8ff,#b873ff,#ff4d6d)',
+          aliases: ['Cực phẩm', 'epic']
+        }
       }
     },
     /* Năm bậc độ hiếm của kinh mạch/cổ vật (data/meridians.js). */

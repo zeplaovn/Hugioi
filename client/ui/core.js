@@ -112,6 +112,11 @@
     const q = x && Number.isInteger(x.sub) && x.sub >= 0 && x.sub <= 3 ? ` data-q="${x.sub}"` : '';
     return `<img class="${cls}"${q} loading="lazy" decoding="async" src="${v.src}"${v.style ? ` style="${esc(v.style)}"` : ''} alt="${esc(x?.name || '')}">`;
   };
+  /* Tên vật phẩm có hiệu ứng theo phẩm chất (hạ xanh dương, trung tím, thượng vàng, cực ngũ sắc). */
+  const itemName = x => {
+    const L = root.HU_LABELS;
+    return L && x && Number.isInteger(x.sub) && F.SUBPHAM[x.sub] ? L.span(x.name, 'quality', F.SUBPHAM[x.sub]) : esc(x?.name || '');
+  };
   const codeAttr = key => `data-code="${esc(key)}"`;
   const bar = (percent, cls = '', id = '') =>
     `<div class="meter-bar ${cls}"><i ${id ? `id="${id}"` : ''} style="width:${clamp(percent, 0, 100)}%"></i></div>`;
@@ -136,7 +141,7 @@
     return Object.entries(effects || {}).map(([k, v]) => (labels[k] || k) + ' +' + (v * weight * 100).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) +
       (['crit', 'dodge', 'regen'].includes(k) ? ' điểm %' : '%')).join(' · ');
   };
-  UI.kit = { $, $$, esc, clamp, num, money, moneyHTML, coinLabel, pct, duration, abs, row, btn, img, codeAttr, bar, card, empty, tabs, live };
+  UI.kit = { itemName, $, $$, esc, clamp, num, money, moneyHTML, coinLabel, pct, duration, abs, row, btn, img, codeAttr, bar, card, empty, tabs, live };
 
   /* ======================================================================
      2. DỮ LIỆU HIỂN THỊ
@@ -223,10 +228,10 @@
      peekRow lưu nội dung chi tiết theo id lúc vẽ; mọi thao tác trong cửa sổ này đều được phép chạy
      (shell tự đóng cửa sổ trước khi chạy hành động). */
   UI.peek = new Map();
-  UI.kit.peekRow = (id, title, { mark = '○', cls = '', eyebrow = 'CHI TIẾT', body = '', img = '' } = {}) => {
+  UI.kit.peekRow = (id, title, { mark = '○', cls = '', eyebrow = 'CHI TIẾT', body = '', img = '', titleHtml = '' } = {}) => {
     UI.peek.set(id, { title, eyebrow, body });
     const e = UI.kit.esc;
-    return `<button type="button" class="peek-row ${cls}" data-act="peek" data-peek="${e(id)}">${img}<span class="peek-name">${e(title)}</span><i class="peek-mark" aria-hidden="true">${mark || '○'}</i></button>`;
+    return `<button type="button" class="peek-row ${cls}" data-act="peek" data-peek="${e(id)}">${img}<span class="peek-name">${titleHtml || e(title)}</span><i class="peek-mark" aria-hidden="true">${mark || '○'}</i></button>`;
   };
   UI.action('peek', (el, d) => {
     const p = UI.peek.get(d.peek);
